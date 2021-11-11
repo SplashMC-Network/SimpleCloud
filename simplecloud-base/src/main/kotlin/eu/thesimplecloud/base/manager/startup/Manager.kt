@@ -173,6 +173,8 @@ class Manager : ICloudApplication {
             .createDirectorySync(File(DirectoryPaths.paths.templatesPath), DirectoryPaths.paths.templatesPath)
         this.templateServer.getDirectorySyncManager()
             .createDirectorySync(File(DirectoryPaths.paths.modulesPath), DirectoryPaths.paths.modulesPath)
+        this.templateServer.getDirectorySyncManager()
+            .createDirectorySync(File(DirectoryPaths.paths.logFilesPath), DirectoryPaths.paths.logFilesPath)
         this.serviceHandler.startThread()
         thread(start = true, isDaemon = false) { templateServer.start() }
         VersionConversionManager().writeLastStartedVersionIfFileDoesNotExist()

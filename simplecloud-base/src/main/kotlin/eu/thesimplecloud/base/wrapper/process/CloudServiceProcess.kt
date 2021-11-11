@@ -39,11 +39,14 @@ import eu.thesimplecloud.clientserverapi.lib.promise.CommunicationPromise
 import eu.thesimplecloud.clientserverapi.lib.promise.ICommunicationPromise
 import eu.thesimplecloud.launcher.startup.Launcher
 import eu.thesimplecloud.loader.dependency.DependencyLoader
-import java.io.BufferedReader
-import java.io.File
-import java.io.IOException
-import java.io.InputStreamReader
+import org.apache.commons.io.FileUtils
+import java.io.*
+import java.nio.charset.StandardCharsets
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 
 class CloudServiceProcess(private val cloudService: ICloudService) : ICloudServiceProcess {
@@ -138,12 +141,35 @@ class CloudServiceProcess(private val cloudService: ICloudService) : ICloudServi
                 if (this.cloudService.isStatic()) {
                     this.serviceDirectory.deleteTemporaryModuleFiles()
                 } else {
+                    this.copyLogFile(File(this.serviceDirectory.serviceTmpDirectory, "logs/latest.log"))
                     this.serviceDirectory.deleteServiceDirectoryUnsafe()
                 }
                 break
             } catch (e: Exception) {
 
             }
+        }
+    }
+
+    private fun copyLogFile(file: File) {
+        if (file.exists()) {
+            val lines = FileUtils.readLines(file, StandardCharsets.UTF_8).joinToString("\n")
+
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            ZipOutputStream(byteArrayOutputStream).use {
+                val entry = ZipEntry("latest.log")
+                it.putNextEntry(entry)
+                it.write(lines.toByteArray())
+                it.closeEntry()
+            }
+
+            val timestamp = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("YYYYMMDD_HHmmss"))
+            val targetFile = File(Launcher.instance.launcherConfig.directoryPaths.logFilesPath + "${this.cloudService.getName()}-${timestamp}.log.gz")
+            if (targetFile.parentFile.exists()) {
+                targetFile.parentFile.mkdirs()
+            }
+            FileUtils.writeByteArrayToFile(targetFile, byteArrayOutputStream.toByteArray())
         }
     }
 
