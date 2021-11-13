@@ -28,7 +28,7 @@ plugins {
 allprojects {
 
     group 'eu.thesimplecloud.simplecloud'
-    version '2.2.1'
+    version '2.2.2'
 
     repositories {
         mavenCentral()
@@ -147,8 +147,8 @@ subprojects {
         }
         repositories {
             maven {
-                name = 'splashmc'
-                url = "https://maven.splashmc.tech/repository/splashmc/"
+                name = 'splashmc-public'
+                url = "https://maven.splashmc.tech/repository/splashmc-public/"
                 credentials {
                     username = "$mavenUser"
                     password = "$mavenPassword"

@@ -118,6 +118,8 @@ class CloudServiceProcess(private val cloudService: ICloudService) : ICloudServi
     private fun processStopped() {
         Launcher.instance.consoleSender.sendProperty("wrapper.service.stopped", cloudService.getName())
         Wrapper.instance.cloudServiceProcessManager.unregisterServiceProcess(this)
+        CloudAPI.instance.getEventManager().call(CloudServiceDestroyEvent(this.cloudService))
+
         deleteTemporaryFiles()
         if (Wrapper.instance.connectionToManager.isOpen()) {
             //CloudAPI.instance.getCloudServiceManager().sendUpdateToConnection(this.cloudService, Wrapper.instance.communicationClient).awaitUninterruptibly()
@@ -139,10 +141,6 @@ class CloudServiceProcess(private val cloudService: ICloudService) : ICloudServi
     private fun deleteTemporaryFiles() {
         while (true) {
             try {
-                cloudListener<CloudServiceDestroyEvent>()
-                    .addCondition { it.cloudService == cloudService }
-                    .unregisterAfterCall()
-                    .toUnitPromise()
                 if (this.cloudService.isStatic()) {
                     this.serviceDirectory.deleteTemporaryModuleFiles()
                 } else {
