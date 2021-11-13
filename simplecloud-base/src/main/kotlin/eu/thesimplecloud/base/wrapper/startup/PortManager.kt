@@ -23,7 +23,6 @@
 package eu.thesimplecloud.base.wrapper.startup
 
 import java.io.IOException
-import java.net.ServerSocket
 import java.net.Socket
 import java.util.concurrent.ConcurrentHashMap
 
@@ -41,9 +40,13 @@ class PortManager {
 
     @Synchronized
     fun getUnusedPort(startPort: Int = START_PORT): Int {
-        ServerSocket(0).use {
-            return it.localPort
+        var port = startPort
+        while (isInUse(port) || isPortBlockedByOtherApp(port)) {
+            port++
         }
+        usedPorts.add(port)
+
+        return port
     }
 
     private fun isPortBlockedByOtherApp(port: Int): Boolean {
