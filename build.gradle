@@ -28,7 +28,7 @@ plugins {
 allprojects {
 
     group 'eu.thesimplecloud.simplecloud'
-    version '2.2.0'
+    version '2.2.1'
 
     repositories {
         mavenCentral()
@@ -147,15 +147,11 @@ subprojects {
         }
         repositories {
             maven {
-                if (project.version.endsWith("SNAPSHOT")) {
-                    url 'https://repo.thesimplecloud.eu/artifactory/list/gradle-dev-local/'
-                } else {
-                    url 'https://repo.thesimplecloud.eu/artifactory/list/gradle-release-local//'
-                }
-
+                name = 'splashmc'
+                url = "https://maven.splashmc.tech/repository/splashmc/"
                 credentials {
-                    username = project.hasProperty("mavenUser") ? project.property("mavenUser") : ""
-                    password = project.hasProperty("mavenPassword") ? project.property("mavenPassword") : ""
+                    username = "$mavenUser"
+                    password = "$mavenPassword"
                 }
             }
         }
