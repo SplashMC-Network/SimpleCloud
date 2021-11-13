@@ -24,6 +24,7 @@ package eu.thesimplecloud.base.wrapper.process
 
 import eu.thesimplecloud.api.CloudAPI
 import eu.thesimplecloud.api.client.NetworkComponentType
+import eu.thesimplecloud.api.event.service.CloudServiceDestroyEvent
 import eu.thesimplecloud.api.event.service.CloudServiceUnregisteredEvent
 import eu.thesimplecloud.api.listenerextension.cloudListener
 import eu.thesimplecloud.api.service.ICloudService
@@ -138,6 +139,10 @@ class CloudServiceProcess(private val cloudService: ICloudService) : ICloudServi
     private fun deleteTemporaryFiles() {
         while (true) {
             try {
+                cloudListener<CloudServiceDestroyEvent>()
+                    .addCondition { it.cloudService == cloudService }
+                    .unregisterAfterCall()
+                    .toUnitPromise()
                 if (this.cloudService.isStatic()) {
                     this.serviceDirectory.deleteTemporaryModuleFiles()
                 } else {
