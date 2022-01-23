@@ -24,6 +24,7 @@ package eu.thesimplecloud.module.sign.service
 
 import eu.thesimplecloud.api.CloudAPI
 import eu.thesimplecloud.api.event.group.CloudServiceGroupUpdatedEvent
+import eu.thesimplecloud.api.event.service.CloudServiceUpdatedEvent
 import eu.thesimplecloud.api.event.sync.`object`.GlobalPropertyUpdatedEvent
 import eu.thesimplecloud.api.eventapi.CloudEventHandler
 import eu.thesimplecloud.api.eventapi.IListener
@@ -73,7 +74,7 @@ class BukkitPluginMain : JavaPlugin() {
                 }
             }
 
-            @EventHandler
+            @CloudEventHandler
             fun handleServiceGroupUpdate(event: CloudServiceGroupUpdatedEvent) {
                 if (event.serviceGroup is ICloudServerGroup)
                     setupGroup(event.serviceGroup, SignModuleConfig.getConfig())

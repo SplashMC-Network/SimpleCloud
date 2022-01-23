@@ -125,12 +125,13 @@ class BukkitCloudSign(
                 Placeholder("STATE") { it.getState().name },
                 Placeholder("NUMBER") { it.getServiceNumber().toString() },
                 Placeholder("WRAPPER") { it.getWrapperName()!! },
-                Placeholder("MAX_PLAYERS") { it.getMaxPlayers().toString() }
+                Placeholder("MAX_PLAYERS") { it.getMaxPlayers().toString() },
+                Placeholder("MAP") { it.getProperty<String>("Map")?.getValue() ?: "" },
         )
 
         private val GROUP_PLACEHOLDERS = listOf<Placeholder<ICloudServiceGroup>>(
                 Placeholder("GROUP") { it.getName() },
-                Placeholder("TEMPLATE") { it.getTemplateName() }
+                Placeholder("TEMPLATE") { it.getTemplateName() },
         )
     }
 }
