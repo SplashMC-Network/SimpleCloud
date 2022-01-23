@@ -36,18 +36,17 @@ class InteractListener : Listener {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        if (event.useInteractedBlock() == Event.Result.DENY) return
-        if (event.action != Action.RIGHT_CLICK_BLOCK)
-            return
-        val clickedBlock = event.clickedBlock ?: return
-        val state = clickedBlock.state
-        if (state is Sign) {
-            val bukkitCloudSign = SignAPI.instance.serviceViewManager.getBukkitCloudSignByLocation(state.location)
-                    ?: return
-            if (bukkitCloudSign.serviceGroup?.isInMaintenance() == true) return
-            val currentServer = bukkitCloudSign.service ?: return
-            if (currentServer.getState() != ServiceState.VISIBLE) return
-            event.player.getCloudPlayer().connect(currentServer)
+        if (event.action == Action.RIGHT_CLICK_BLOCK && event.clickedBlock != null && event.clickedBlock!!.state is Sign) {
+            val sign = event.clickedBlock!!.state as Sign
+            SignAPI.instance.serviceViewManager.getBukkitCloudSignByLocation(sign.location)?.let { bukkitCloudSign ->
+                if (bukkitCloudSign.serviceGroup?.isInMaintenance() == false) {
+                    bukkitCloudSign.service?.let { currentServer ->
+                        if (currentServer.getState() == ServiceState.VISIBLE) {
+                            event.player.getCloudPlayer().connect(currentServer)
+                        }
+                    }
+                }
+            }
         }
     }
 
